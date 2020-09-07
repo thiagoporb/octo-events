@@ -28,6 +28,11 @@ Essas referências adicionais também devem ajudá-lo:
 * [Ambiente de Desenvolvimento]() 
 * [Gestão de Configuração](docs/gestao_configuracao.md)
 
+Testes:
+
+  - [junit](https://github.com/junit-team/junit4)
+  - [Unirest](https://github.com/Kong/unirest-java) para invocar endpoints nos testes de integração
+
 # Instalação
  
 ## Pré-requisitos
