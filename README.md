@@ -7,21 +7,11 @@ Para referências futuras por favor, considere ver as seções:
 
 * [Javalin](https://github.com/JetBrains/kotlin) Framework web
 * [Koin](https://github.com/InsertKoinIO/koin) Injeção de dependencia
-* [Jackson](https://github.com/FasterXML/jackson-module-kotlin) data bind serialização/deserializção
+* [Jackson](https://github.com/FasterXML/jackson-module-kotlin) Data Bind serialização/deserialização
 * [HikariCP](https://github.com/brettwooldridge/HikariCP) Gerenciador de pool de conexões
 * [PostgresSQL](https://www.postgresql.org) Banco de dados 
 * [H2](https://www.h2database.com) Banco de dados para testes 
 * [OpenAPI 3.0 specification](https://springdoc.org/)
-
-### Guias
-Os guias a seguir ilustram como usar alguns recursos concretamente:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-* [Handling Form Submission](https://spring.io/guides/gs/handling-form-submission/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
 
 ### Links Adicionais
 Essas referências adicionais também devem ajudá-lo:
@@ -30,11 +20,10 @@ Essas referências adicionais também devem ajudá-lo:
 
 ### Guias de instruções
 
-
 * [Estruturação](docs/instalation.md)
 * [Principais pacotes]()
 * [Classes de Apoio]()
-* [Arquivos de Propriedades(yaml)]() 
+* [Arquivos de Propriedades(.properties)]() 
 * [Padrão de Codificação]() 
 * [Ambiente de Desenvolvimento]() 
 * [Gestão de Configuração](docs/gestao_configuracao.md)
