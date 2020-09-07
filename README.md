@@ -39,7 +39,7 @@ Essas referências adicionais também devem ajudá-lo:
  
 ## Pré-requisitos
 
-Para executar o jst-account-service, você precisará das seguintes tecnologias.
+Para executar o octo-events, você precisará das seguintes tecnologias.
 
 1. Java 11 ou superior do [site da Oracle] (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
@@ -47,7 +47,7 @@ Para executar o jst-account-service, você precisará das seguintes tecnologias.
 
 3. Clonando respositório
 ```bash
-git clone git@github.com:justapagamentos/jst-account-service.git
+git clone git@github.com:thiagoporb/octo-events.git
 ```
 4. Compilando
  ```bash
