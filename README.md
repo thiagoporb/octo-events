@@ -134,7 +134,7 @@ Este endpoint recebe e valida os eventos do tipo IssueEvent postados pelo Github
 
 **Endpoint:** POST  [http://localhost:7000/api/events](http://localhost:7000/api/events)
 
-**Format:**
+**Formato:**
 
 Este é um exemplo de JSON enviado pelo Github:
 
@@ -388,3 +388,33 @@ Este é um exemplo de JSON enviado pelo Github:
   }
 }
 ```
+
+### Tipos de Response:
+
+Algumas classes de apoio foram previamente disponibilizadas, visando padronização e produtividade através do reuso. As principais classes são: 
+
+| Código           | Resultado           
+-------------------|------------------------------------------------------
+| `201`            | Evento validado e persistido.
+| `400`            | Evento inválido, não foi inserido no banco de dados.
+| `500`            | Erro inesperado do servidor.
+
+### Listar Eventos Endpoint
+Este endpoint lista todos os eventos associados a uma Issue.
+
+**Endpoint:** GET http://localhost:7000/api/issues/{numeroIssue}/events
+
+**Formato:**
+
+Este é um exemplo de response deste endpoint:
+
+### Tipos de Response:
+
+Algumas classes de apoio foram previamente disponibilizadas, visando padronização e produtividade através do reuso. As principais classes são: 
+
+| Código           | Resultado           
+-------------------|---------------------------------------------------------
+| `200`            | Ao menos um Evento foi encontrado.
+| `400`            | Parâmetro (PARAM) inválido. Deve ser um número positivo.
+| `404`            | Nenhum evento encontrado.
+| `500`            | Erro inesperado do servidor.
