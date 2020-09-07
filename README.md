@@ -62,8 +62,8 @@ gradle build --scan
     |- java                    
       |- vc
         |- com
-          |- justa
-            |- account
+          |- example
+            |- octoevents
               |- config         Contem as Classes de Configurações
               |- domain         Contem as Classes de Modelo de Dominio
                 |- service      Contem as classes de Serviços
@@ -84,11 +84,11 @@ Algumas classes de apoio foram previamente disponibilizadas, visando padronizaç
 
 | Classe                                                    | Descrição           
 ------------------------------------------------------------|---------------------------------------------------------------------------------------
-| `vc.com.justa.account.config.Constants`                   | Representa as constantes globais da aplicação
-| `vc.com.justa.account.config.CacheConfiguration`          | Realiza as configurações de Cache da aplicacao
-| `vc.com.justa.account.config.JacksonConfiguration`        | Realiza as configurações do Jackson
-| `vc.com.justa.account.config.DateTimeFormatConfiguration` | Realiza as configurações do DateTime para o formato ISO
-| `vc.com.justa.account.config.MethodSecurityConfiguration` | Realiza as configurações no Spring Security, explicitando o medo de segurança para OAuth2
+| `com.example.octoevents.config.Constants`                   | Representa as constantes globais da aplicação
+| `com.example.octoevents.config.CacheConfiguration`          | Realiza as configurações de Cache da aplicacao
+| `com.example.octoevents.config.JacksonConfiguration`        | Realiza as configurações do Jackson
+| `com.example.octoevents.config.DateTimeFormatConfiguration` | Realiza as configurações do DateTime para o formato ISO
+| `com.example.octoevents.config.MethodSecurityConfiguration` | Realiza as configurações no Spring Security, explicitando o medo de segurança para OAuth2
 
 # Docker e Docker Compose
 
