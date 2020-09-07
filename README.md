@@ -84,11 +84,10 @@ Algumas classes de apoio foram previamente disponibilizadas, visando padronizaç
 
 | Classe                                                    | Descrição           
 ------------------------------------------------------------|---------------------------------------------------------------------------------------
-| `com.example.octoevents.config.Constants`                   | Representa as constantes globais da aplicação
-| `com.example.octoevents.config.CacheConfiguration`          | Realiza as configurações de Cache da aplicacao
-| `com.example.octoevents.config.JacksonConfiguration`        | Realiza as configurações do Jackson
-| `com.example.octoevents.config.DateTimeFormatConfiguration` | Realiza as configurações do DateTime para o formato ISO
-| `com.example.octoevents.config.MethodSecurityConfiguration` | Realiza as configurações no Spring Security, explicitando o medo de segurança para OAuth2
+| `com.example.octoevents.config.AppConfig`                   | Realiza as configurações do servidor
+| `com.example.octoevents.config.DatabaseConfig`              | Realiza as configurações do banco de dados
+| `com.example.octoevents.config.ModulesConfig`               | Realiza as configurações dos modulos para injeção de dependencia
+| `com.example.octoevents.config.OpenApiConfig`               | Realiza as configurações da especificação Open Api
 
 # Docker e Docker Compose
 
