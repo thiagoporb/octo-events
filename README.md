@@ -408,7 +408,7 @@ Este endpoint lista todos os eventos associados a uma Issue.
 
 Este é um exemplo de response deste endpoint:
 
-### Tipos de Response:
+### Tipos de Response: 
 
 Algumas classes de apoio foram previamente disponibilizadas, visando padronização e produtividade através do reuso. As principais classes são: 
 
