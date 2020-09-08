@@ -1,8 +1,7 @@
 package com.example.octoevents.domain.issue
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder
-class Change
+data class Change(@JsonProperty("body") val body: Body)

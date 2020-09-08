@@ -9,6 +9,7 @@ data class Issue(
     @JsonProperty("url") var url: String? = null,
     @JsonProperty("repository_url") var repositoryUrl: String? = null,
     @JsonProperty("labels_url") var labelsUrl: String? = null,
+    @JsonProperty("active_lock_reason") var activeLockReason: String? = null,
     @JsonProperty("comments_url") var commentsUrl: String? = null,
     @JsonProperty("events_url") var eventsUrl: String? = null,
     @JsonProperty("html_url") var htmlUrl: String? = null,

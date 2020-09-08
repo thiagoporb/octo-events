@@ -74,7 +74,7 @@ data class Repository(
     @JsonProperty("archived") var archived: Boolean? = null,
     @JsonProperty("disabled") var disabled: Boolean? = null,
     @JsonProperty("open_issues_count") var openIssuesCount: Long? = null,
-    @JsonProperty("license") var license: String? = null,
+    @JsonProperty("license") var license: License? = null,
     @JsonProperty("forks") var forks: Long? = null,
     @JsonProperty("open_issues") var openIssues: Long? = null,
     @JsonProperty("watchers") var watchers: Long? = null,

@@ -19,7 +19,7 @@ ext {
     junit_version = "4.12"
     unirest_version = "1.4.9"
     hikaricp_version = "3.3.0"
-    h2_version = "1.4.200"
+    h2_version = "1.4.199"
     exposed_version = "0.17.7"
     swagger_version = "3.24.3"
     swagger_core_version = "2.0.9"
@@ -46,7 +46,9 @@ dependencies {
     compile("org.koin:koin-core:$koin_version")
     compile("org.jetbrains.exposed:exposed:$exposed_version")
     compile("com.zaxxer:HikariCP:$hikaricp_version")
-    testCompile("com.h2database:h2:$h2_version")
+    //testRuntime("com.h2database:h2:$h2_version")
+    //testCompile("com.h2database:h2:$h2_version")
+    //testImplementation("com.h2database:h2:$h2_version")
     testCompile("org.koin:koin-test:$koin_version")
     testCompile("com.mashape.unirest:unirest-java:$unirest_version")
     testCompile("junit:junit:$junit_version")

@@ -1,6 +1,11 @@
 package com.example.octoevents.domain.repository
 
 import com.example.octoevents.domain.issue.*
+import com.example.octoevents.domain.repository.IssueEvents.nullable
+import com.example.octoevents.domain.repository.IssueEvents.references
+import com.example.octoevents.domain.repository.Repositorys.nullable
+import com.example.octoevents.domain.repository.Repositorys.references
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -10,7 +15,7 @@ import javax.sql.DataSource
 internal object IssueEvents : LongIdTable("issue_event") {
     var action = varchar("ref", 255).nullable()
     var issueId = long("issue_id").references(Issues.id).nullable()
-    var changeId = long("change_id").references(Changes.id).nullable()
+    var changeId = (varchar("change_id", 255) references Changes.bodyId).nullable()
     val repositoryId = long("repository_id").references(Repositorys.id).nullable()
     var senderId = long("sender_id").references(Senders.id).nullable()
 }
@@ -97,6 +102,8 @@ internal object Issues : Table("issue") {
     var url = varchar("url", 255).nullable()
     var repositoryUrl = varchar("repository_url", 255).nullable()
     var labelsUrl = varchar("labels_url", 255).nullable()
+    var activeLockReason = varchar("active_lock_reason", 255).nullable()
+    var performedViaGithubApp = varchar("performed_via_github_app", 255).nullable()
     var commentsUrl = varchar("comments_url", 255).nullable()
     var eventsUrl = varchar("events_url", 255).nullable()
     var htmlUrl = varchar("html_url", 255).nullable()
@@ -104,13 +111,9 @@ internal object Issues : Table("issue") {
     var number = long("number")
     var title = varchar("title", 255).nullable()
     var userId = long("user_id").references(Users.id).nullable()
-
-    //var labels:  MutableList<Label>? = null,
     var state = varchar("state", 255).nullable()
     var locked = bool("locked").nullable()
     var assigneeId = long("assignee_id").references(Assignees.id).nullable()
-
-    //var assignees:  MutableList<Assignee>? = null,
     var milestoneId = long("milestone_id").references(Milestones.id).nullable()
     var comments = long("comments").nullable()
     var createdAt = varchar("created_at", 255).nullable()
@@ -254,7 +257,13 @@ internal object Licenses : Table("license") {
 
 }
 
-internal object Changes : LongIdTable("change") {}
+internal object Changes : Table("change") {
+    var bodyId = varchar("body_id", 255).primaryKey().references(Bodys.from)
+}
+
+internal object Bodys : Table("body") {
+    var from = varchar("from", 255).primaryKey()
+}
 
 internal object Senders : Table("sender") {
     var id = long("id").uniqueIndex().primaryKey(0)
@@ -281,10 +290,10 @@ fun toDomain(row: ResultRow): IssueEvent {
     return IssueEvent(
         id = row[IssueEvents.id].value,
         action = row[IssueEvents.action],
-        issue = getIssue(row),
-        //changes = getChange(row),
-        sender = getSender(row),
-        repository = getRepository(row),
+        issue = row[IssueEvents.issueId]?.let { getIssue(row) } ,
+        changes = row[IssueEvents.changeId]?.let { getChanges(row) },
+        sender = row[IssueEvents.senderId]?.let { getSender(row) },
+        repository = row[IssueEvents.repositoryId]?.let {  getRepository(row) },
     )
 }
 
@@ -292,6 +301,7 @@ private fun getIssue(row: ResultRow): Issue {
     return Issue(
         id = row[Issues.id],
         url = row[Issues.url],
+        activeLockReason = row[Issues.activeLockReason],
         repositoryUrl = row[Issues.repositoryUrl],
         labelsUrl = row[Issues.labelsUrl],
         commentsUrl = row[Issues.commentsUrl],
@@ -300,13 +310,13 @@ private fun getIssue(row: ResultRow): Issue {
         nodeId = row[Issues.nodeId],
         number = row[Issues.number],
         title = row[Issues.title],
-        user = getUser(row),
+        user = row[Issues.userId]?.let { getUser(row) } ,
         labels = getLabels(row),
         state = row[Issues.state],
         locked = row[Issues.locked],
-        assignee = getAssignee(row),
+        assignee = row[Issues.assigneeId]?.let { getAssignee(row) },
         assignees = getAssignees(row),
-        milestone = getMilestone(row),
+        milestone = row[Issues.milestoneId]?.let { getMilestone(row) },
         comments = row[Issues.comments],
         createdAt = row[Issues.createdAt],
         updatedAt = row[Issues.updatedAt],
@@ -316,9 +326,11 @@ private fun getIssue(row: ResultRow): Issue {
     )
 }
 
-private fun getChanges(): Change {
+private fun getChanges(row: ResultRow): Change {
     return Change(
-
+        Body(
+            from = row[Bodys.from]
+        )
     )
 }
 
@@ -442,28 +454,7 @@ private fun getRepository(row: ResultRow): Repository {
         name = row[Repositorys.name],
         fullName = row[Repositorys.fullName],
         _private = row[Repositorys._private],
-        owner = Owner(
-            //name = row[Owners.name],
-            //email = row[Owners.email],
-            login = row[Owners.login],
-            id = row[Owners.id],
-            nodeId = row[Owners.nodeId],
-            avatarUrl = row[Owners.avatarUrl],
-            gravatarId = row[Owners.gravatarId],
-            url = row[Owners.url],
-            htmlUrl = row[Owners.htmlUrl],
-            followersUrl = row[Owners.followersUrl],
-            followingUrl = row[Owners.followingUrl],
-            gistsUrl = row[Owners.gistsUrl],
-            starredUrl = row[Owners.starredUrl],
-            subscriptionsUrl = row[Owners.subscriptionsUrl],
-            organizationsUrl = row[Owners.organizationsUrl],
-            reposUrl = row[Owners.reposUrl],
-            eventsUrl = row[Owners.eventsUrl],
-            receivedEventsUrl = row[Owners.receivedEventsUrl],
-            type = row[Owners.type],
-            siteAdmin = row[Owners.siteAdmin]
-        ),
+        owner = row[Repositorys.ownerId]?.let { getOwner(row) },
         htmlUrl = row[Repositorys.htmlUrl],
         description = row[Repositorys.description],
         fork = row[Repositorys.fork],
@@ -526,13 +517,11 @@ private fun getRepository(row: ResultRow): Repository {
         archived = row[Repositorys.archived],
         disabled = row[Repositorys.disabled],
         openIssuesCount = row[Repositorys.openIssuesCount],
-        license = row[Repositorys.licenseId],
+        license = row[Repositorys.licenseId]?.let { getLicense(row) },
         forks = row[Repositorys.forks],
         openIssues = row[Repositorys.openIssues],
         watchers = row[Repositorys.watchers],
-        defaultBranch = row[Repositorys.defaultBranch],
-        //stargazers = row[Repositorys.stargazers],
-        //masterBranch = row[Repositorys.masterBranch]
+        defaultBranch = row[Repositorys.defaultBranch]
     )
 }
 
@@ -555,12 +544,47 @@ private fun getLabel(row: ResultRow): Label {
     )
 }
 
+private fun getLicense(row: ResultRow): License {
+    return License(
+        key = row[Licenses.key],
+        name = row[Licenses.name],
+        spdxId = row[Licenses.spdxId],
+        url = row[Licenses.url],
+        nodeId = row[Licenses.nodeId]
+    )
+}
+
 private fun getLabels(row: ResultRow): MutableList<Label> {
     return Labels
         .join(IssuesLabels, JoinType.INNER, additionalConstraint = { IssuesLabels.issueId eq row[Issues.id] })
         .select { IssuesLabels.issueId eq row[Issues.id] }
         .map { getLabel(it) }
         .toMutableList()
+}
+
+private fun getOwner(row: ResultRow): Owner {
+    return Owner(
+        //name = row[Owners.name],
+        //email = row[Owners.email],
+        login = row[Owners.login],
+        id = row[Owners.id],
+        nodeId = row[Owners.nodeId],
+        avatarUrl = row[Owners.avatarUrl],
+        gravatarId = row[Owners.gravatarId],
+        url = row[Owners.url],
+        htmlUrl = row[Owners.htmlUrl],
+        followersUrl = row[Owners.followersUrl],
+        followingUrl = row[Owners.followingUrl],
+        gistsUrl = row[Owners.gistsUrl],
+        starredUrl = row[Owners.starredUrl],
+        subscriptionsUrl = row[Owners.subscriptionsUrl],
+        organizationsUrl = row[Owners.organizationsUrl],
+        reposUrl = row[Owners.reposUrl],
+        eventsUrl = row[Owners.eventsUrl],
+        receivedEventsUrl = row[Owners.receivedEventsUrl],
+        type = row[Owners.type],
+        siteAdmin = row[Owners.siteAdmin]
+    )
 }
 
 class IssueEventRepository(private val dataSource: DataSource) {
@@ -599,17 +623,17 @@ class IssueEventRepository(private val dataSource: DataSource) {
         return transaction(Database.connect(dataSource)) {
             addLogger(StdOutSqlLogger)
             IssueEvents
-                .join(Issues, JoinType.INNER, additionalConstraint = { IssueEvents.issueId eq Issues.id })
-                .join(
-                    Repositorys,
-                    JoinType.INNER,
-                    additionalConstraint = { IssueEvents.repositoryId eq Repositorys.id })
-                .join(Owners, JoinType.INNER, additionalConstraint = { Repositorys.ownerId eq Owners.id })
-                .join(Senders, JoinType.INNER, additionalConstraint = { IssueEvents.senderId eq Senders.id })
-                .join(Users, JoinType.INNER, additionalConstraint = { Issues.userId eq Users.id })
-                .join(Assignees, JoinType.INNER, additionalConstraint = { Issues.assigneeId eq Assignees.id })
-                .join(Milestones, JoinType.INNER, additionalConstraint = { Issues.milestoneId eq Milestones.id })
-                .join(Creators, JoinType.INNER, additionalConstraint = { Milestones.creatorId eq Creators.id })
+                .join(Issues, JoinType.LEFT, additionalConstraint = { IssueEvents.issueId eq Issues.id })
+                .join(Repositorys, JoinType.LEFT, additionalConstraint = { IssueEvents.repositoryId eq Repositorys.id })
+                .join(Licenses, JoinType.LEFT, additionalConstraint = { Repositorys.licenseId eq Licenses.nodeId })
+                .join(Changes, JoinType.LEFT, additionalConstraint = { IssueEvents.changeId eq Changes.bodyId })
+                .join(Bodys, JoinType.LEFT, additionalConstraint = { Changes.bodyId eq Bodys.from })
+                .join(Owners, JoinType.LEFT, additionalConstraint = { Repositorys.ownerId eq Owners.id })
+                .join(Senders, JoinType.LEFT, additionalConstraint = { IssueEvents.senderId eq Senders.id })
+                .join(Users, JoinType.LEFT, additionalConstraint = { Issues.userId eq Users.id })
+                .join(Assignees, JoinType.LEFT, additionalConstraint = { Issues.assigneeId eq Assignees.id })
+                .join(Milestones, JoinType.LEFT, additionalConstraint = { Issues.milestoneId eq Milestones.id })
+                .join(Creators, JoinType.LEFT, additionalConstraint = { Milestones.creatorId eq Creators.id })
 
                 .select { IssueEvents.id eq id }
                 .map { row -> toDomain(row) }
@@ -621,7 +645,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
         IssueEvents.insertAndGetId { row ->
             row[action] = issueEvent.action
             row[issueId] = issueEvent.issue?.let { insertIssue(it) }
-            //row[changeId] =  issueEvent.change_id
+            row[changeId] = issueEvent.changes?.let { insertChange(it) }
             row[repositoryId] = issueEvent.repository?.let { insertRepository(it) }
             row[senderId] = issueEvent.sender?.let { insertSender(it) }
 
@@ -633,6 +657,8 @@ class IssueEventRepository(private val dataSource: DataSource) {
             row[id] = issue.id
             row[url] = issue.url
             row[repositoryUrl] = issue.repositoryUrl
+            row[activeLockReason] = issue.activeLockReason
+            row[performedViaGithubApp] = issue.performedViaGithubApp
             row[labelsUrl] = issue.labelsUrl
             row[commentsUrl] = issue.commentsUrl
             row[eventsUrl] = issue.eventsUrl
@@ -655,7 +681,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
     }
 
     private fun insertUser(user: User): Long {
-        return Users.insert { row ->
+        return Users.insertIgnore { row ->
             row[id] = user.id
             row[login] = user.login
             row[nodeId] = user.nodeId
@@ -745,7 +771,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
     }
 
     private fun insertSender(sender: Sender): Long {
-        return Senders.insert { row ->
+        return Senders.insertIgnore { row ->
             row[id] = sender.id
             row[login] = sender.login
             row[nodeId] = sender.nodeId
@@ -768,7 +794,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
     }
 
     private fun insertRepository(repository: Repository): Long {
-        return Repositorys.insert { row ->
+        return Repositorys.insertIgnore { row ->
             row[id] = repository.id
             row[nodeId] = repository.nodeId
             row[name] = repository.name
@@ -837,7 +863,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
             row[archived] = repository.archived
             row[disabled] = repository.disabled
             row[openIssuesCount] = repository.openIssuesCount
-            row[licenseId] = repository.license
+            row[licenseId] = repository.license?.let { insertLicense(it) } //repository.license
             row[forks] = repository.forks
             row[openIssues] = repository.openIssues
             row[watchers] = repository.watchers
@@ -846,7 +872,7 @@ class IssueEventRepository(private val dataSource: DataSource) {
     }
 
     private fun insertOwner(owner: Owner): Long {
-        return Owners.insert { row ->
+        return Owners.insertIgnore { row ->
             row[id] = owner.id
             //row[name] = owner.name
             //row[email] = owner.email
@@ -882,9 +908,31 @@ class IssueEventRepository(private val dataSource: DataSource) {
         } get Labels.id
     }
 
+    private fun insertLicense(license: License): String? {
+        return Licenses.insertIgnore { row ->
+            row[key] = license.key
+            row[name] = license.name
+            row[spdxId] = license.spdxId
+            row[url] = license.url
+            row[nodeId] = license.nodeId
+        } get Licenses.nodeId
+    }
+
     private fun insertLabels(issue: Issue) {
         issue.labels?.forEach { insertLabel(it) }
         insertIssuesLabels(issue)
+    }
+
+    private fun insertChange(change: Change): String? {
+        return Changes.insertIgnore { row ->
+            row[bodyId] = insertBody(change.body).toString()  //change.body.from
+        } get Changes.bodyId
+    }
+
+    private fun insertBody(body: Body): String? {
+        return Bodys.insertIgnore { row ->
+            row[from] = body.from
+        } get Bodys.from
     }
 
     private fun insertsAssignees(issue: Issue) {

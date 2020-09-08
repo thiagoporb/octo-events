@@ -10,6 +10,8 @@ data class Issue(
     @JsonProperty("repository_url") var repositoryUrl: String? = null,
     @JsonProperty("labels_url") var labelsUrl: String? = null,
     @JsonProperty("comments_url") var commentsUrl: String? = null,
+    @JsonProperty("active_lock_reason") var activeLockReason: String? = null,
+    @JsonProperty("performed_via_github_app") var performedViaGithubApp: String? = null,
     @JsonProperty("events_url") var eventsUrl: String? = null,
     @JsonProperty("html_url") var htmlUrl: String? = null,
     @JsonProperty("id") val id: Long,

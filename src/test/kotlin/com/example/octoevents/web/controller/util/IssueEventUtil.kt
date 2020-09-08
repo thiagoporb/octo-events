@@ -196,7 +196,7 @@ fun loadIssueEvent(): IssueEvent {
         id = 1,
         action = "edited",
         issue = getIssue(),
-        changes = Change(),
+        //changes = Change(),
         repository = getRepository(),
         sender = getSender()
     )
